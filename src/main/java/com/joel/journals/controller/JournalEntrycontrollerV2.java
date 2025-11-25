@@ -2,6 +2,7 @@ package com.joel.journals.controller;
 
 import com.joel.journals.entity.JornalEntry;
 import com.joel.journals.service.JournalEntryService;
+import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,25 +26,33 @@ public class JournalEntrycontrollerV2 {
     }
 
     @PostMapping
-    public boolean createEntry(@RequestBody JornalEntry myentry) {
+    public JornalEntry createEntry(@RequestBody JornalEntry myentry) {
         myentry.setDate(LocalDateTime.now());
         journalEntryService.saveEntry( myentry );
-        return true;
+        return myentry;
     }
 
     @GetMapping("/id/{myid}")
-    public JornalEntry getByid(@PathVariable Long myid){
-        return null;
+    public JornalEntry getByid(@PathVariable ObjectId myid){
+        return journalEntryService.getEntryById(myid).orElse(null);
     }
 
     @DeleteMapping("/{myid}")
-    public boolean deleteEntry(@PathVariable Long myid){
+    public boolean deleteEntry(@PathVariable ObjectId myid){
+        journalEntryService.deleteEntryById(myid);
         return true;
     }
 
     @PutMapping("/{id}")
-    public JornalEntry upadteEntry(@PathVariable Long id,@RequestBody JornalEntry myentry){
-        return null;
+    public JornalEntry upadteEntry(@PathVariable ObjectId id,@RequestBody JornalEntry newentry){
+        JornalEntry old=journalEntryService.getEntryById(id).orElse(null);
+        if(old!=null){
+            old.setTitle(newentry.getTitle()!=null && newentry.getTitle().equals("")?newentry.getTitle():old.getTitle());
+            old.setContent(newentry.getContent()!=null && newentry.getContent().equals("")?newentry.getContent():old.getContent());
+        }
+        journalEntryService.saveEntry(old);
+
+        return old;
 
     }
 
