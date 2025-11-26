@@ -6,6 +6,9 @@ import com.joel.journals.service.JournalEntryService;
 import com.joel.journals.service.usersService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -14,6 +17,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/users")
 public class usercontroller {
+
     @Autowired
     private usersService userentry;
 
@@ -25,10 +29,9 @@ public class usercontroller {
     }
 
     @PostMapping
-    public users createEntry(@RequestBody users entry) {
+    public void createEntry(@RequestBody users entry) {
 
         userentry.saveEntry(entry);
-        return entry;
     }
 
     @GetMapping("/id/{myid}")
@@ -36,23 +39,22 @@ public class usercontroller {
         return userentry.getEntryById(myid).orElse(null);
     }
 
-    @DeleteMapping("/{myid}")
-    public boolean deleteEntry(@PathVariable ObjectId myid){
-        userentry.deleteEntryById(myid);
-        return true;
+//    @DeleteMapping("/{myid}")
+//    public boolean deleteEntry(@PathVariable ObjectId myid){
+//        userentry.deleteEntryById(myid);
+//        return true;
+//    }
+
+    @PutMapping("/{username}")
+    public ResponseEntity<?> updateuser(@RequestBody users entry,@PathVariable String username) {
+        users use= userentry.findbyUsername(username);
+        if(use!=null){
+            use.setUsername(entry.getUsername());
+            use.setPassword(entry.getPassword());
+            userentry.saveEntry(use);
+        }
+        return new ResponseEntity<>( HttpStatus.NO_CONTENT);
     }
 
-//    @PutMapping("/{id}")
-//    public users upadteEntry(@PathVariable ObjectId id,@RequestBody JornalEntry newentry){
-//        users old=userentry.getEntryById(id).orElse(null);
-//        if(old!=null){
-//            old.setTitle(newentry.getTitle()!=null && newentry.getTitle().equals("")?newentry.getTitle():old.getTitle());
-//            old.setContent(newentry.getContent()!=null && newentry.getContent().equals("")?newentry.getContent():old.getContent());
-//        }
-//        userentry.saveEntry(old);
-//
-//        return old;
-//
-//    }
 
 }
