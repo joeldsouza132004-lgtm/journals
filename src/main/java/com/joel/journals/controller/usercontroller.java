@@ -9,6 +9,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -28,12 +30,6 @@ public class usercontroller {
         return userentry.getEntries();
     }
 
-    @PostMapping
-    public void createEntry(@RequestBody users entry) {
-
-        userentry.saveEntry(entry);
-    }
-
     @GetMapping("/id/{myid}")
     public users getByid(@PathVariable ObjectId myid){
         return userentry.getEntryById(myid).orElse(null);
@@ -45,8 +41,10 @@ public class usercontroller {
 //        return true;
 //    }
 
-    @PutMapping("/{username}")
-    public ResponseEntity<?> updateuser(@RequestBody users entry,@PathVariable String username) {
+    @PutMapping()
+    public ResponseEntity<?> updateuser(@RequestBody users entry) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
         users use= userentry.findbyUsername(username);
         if(use!=null){
             use.setUsername(entry.getUsername());
