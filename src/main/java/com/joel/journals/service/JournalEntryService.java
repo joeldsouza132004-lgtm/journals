@@ -6,6 +6,7 @@ import com.joel.journals.repositary.JournalEntryRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -18,6 +19,7 @@ public class JournalEntryService {
     @Autowired
     private usersService usersService;
 
+    @Transactional
     public void saveEntry(JornalEntry myentry, String username) {
         users user=usersService.findbyUsername(username);
         JornalEntry saved =journalEntryRepo.save(myentry);
@@ -26,7 +28,6 @@ public class JournalEntryService {
     }
 
     public void saveEntry(JornalEntry myentry) {
-
         journalEntryRepo.save(myentry);
     }
 
