@@ -17,6 +17,6 @@ public class publicEntry {
 
     @PostMapping
     public void createEntry(@RequestBody users entry) {
-        userentry.saveEntry(entry);
+        userentry.SaveNewEntry(entry);
     }
 }
