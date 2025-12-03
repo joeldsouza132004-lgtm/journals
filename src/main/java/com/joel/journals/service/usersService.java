@@ -8,7 +8,6 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
-import java.net.PasswordAuthentication;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -21,13 +20,19 @@ public class usersService {
 
     private static final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public void saveEntry(users userentry) {
+    public void SaveNewEntry(users userentry) {
         userentry.setPassword(encoder.encode(userentry.getPassword()));
         userentry.setRoles(Arrays.asList("USER"));
         usersrepos.save(userentry);
     }
 
-    public void saveNewEntry(users userentry) {
+    public void saveAdmin(users userentry) {
+        userentry.setPassword(encoder.encode(userentry.getPassword()));
+        userentry.setRoles(Arrays.asList("USER","ADMIN"));
+        usersrepos.save(userentry);
+    }
+
+    public void saveEntry(users userentry) {
         usersrepos.save(userentry);
     }
 
