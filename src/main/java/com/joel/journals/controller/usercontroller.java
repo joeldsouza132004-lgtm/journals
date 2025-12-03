@@ -1,19 +1,15 @@
 package com.joel.journals.controller;
 
-import com.joel.journals.entity.JornalEntry;
 import com.joel.journals.entity.users;
-import com.joel.journals.service.JournalEntryService;
 import com.joel.journals.service.usersService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -49,7 +45,7 @@ public class usercontroller {
         if(use!=null){
             use.setUsername(entry.getUsername());
             use.setPassword(entry.getPassword());
-            userentry.saveEntry(use);
+            userentry.SaveNewEntry(use);
         }
         return new ResponseEntity<>( HttpStatus.NO_CONTENT);
     }
