@@ -1,6 +1,6 @@
 package com.joel.journals.controller;
 
-import com.joel.journals.entity.users;
+import com.joel.journals.entity.UserEntry;
 import com.joel.journals.service.usersService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/users")
-public class usercontroller {
+public class UserController {
 
     @Autowired
     private usersService userentry;
@@ -22,12 +22,12 @@ public class usercontroller {
 
 
     @GetMapping
-    public List<users> getAll() {
+    public List<UserEntry> getAll() {
         return userentry.getEntries();
     }
 
     @GetMapping("/id/{myid}")
-    public users getByid(@PathVariable ObjectId myid){
+    public UserEntry getByid(@PathVariable ObjectId myid){
         return userentry.getEntryById(myid).orElse(null);
     }
 
@@ -38,10 +38,10 @@ public class usercontroller {
 //    }
 
     @PutMapping()
-    public ResponseEntity<?> updateuser(@RequestBody users entry) {
+    public ResponseEntity<?> updateuser(@RequestBody UserEntry entry) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        users use= userentry.findbyUsername(username);
+        UserEntry use= userentry.findbyUsername(username);
         if(use!=null){
             use.setUsername(entry.getUsername());
             use.setPassword(entry.getPassword());
