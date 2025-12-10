@@ -11,8 +11,8 @@ public class HealthCheck {
         return "hello-from-app-engine";
     }
 
-    @GetMapping("/app")
+    @GetMapping("/home")
     public String app(){
-        return "hello-from-app-engine";
+        return "helngine";
     }
 }
