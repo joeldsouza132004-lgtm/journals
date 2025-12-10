@@ -10,4 +10,9 @@ public class HealthCheck {
     public String home() {
         return "hello-from-app-engine";
     }
+
+    @GetMapping("/app")
+    public String app(){
+        return "hello-from-app-engine";
+    }
 }
