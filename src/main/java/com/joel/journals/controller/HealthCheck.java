@@ -13,6 +13,6 @@ public class HealthCheck {
 
     @GetMapping("/app")
     public String app(){
-        return "hello-from-app-engine";
+        return "helngine";
     }
 }

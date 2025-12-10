@@ -1,21 +1,21 @@
 package com.joel.journals.service;
 
-import com.joel.journals.entity.users;
+import com.joel.journals.entity.UserEntry;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
-import com.joel.journals.repositary.usersrepos;
+import com.joel.journals.repositary.UserEntryRepo;
 
 @Component
 public class userDetailsServiceImpl implements UserDetailsService {
 
     @Autowired
-    private usersrepos userrepo;
+    private UserEntryRepo userrepo;
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException{
-        users user =userrepo.findByUsername(username);
+        UserEntry user =userrepo.findByUsername(username);
         if(user!=null){
             UserDetails userdetails= org.springframework.security.core.userdetails.User.builder()
                     .username(user.getUsername())

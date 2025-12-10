@@ -1,7 +1,7 @@
 package com.joel.journals.service;
 
-import com.joel.journals.entity.users;
-import com.joel.journals.repositary.usersrepos;
+import com.joel.journals.entity.UserEntry;
+import com.joel.journals.repositary.UserEntryRepo;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,31 +16,31 @@ import java.util.Optional;
 public class usersService {
 
     @Autowired
-    private usersrepos usersrepos;
+    private UserEntryRepo usersrepos;
 
     private static final PasswordEncoder encoder = new BCryptPasswordEncoder();
 
-    public void SaveNewEntry(users userentry) {
+    public void SaveNewEntry(UserEntry userentry) {
         userentry.setPassword(encoder.encode(userentry.getPassword()));
         userentry.setRoles(Arrays.asList("USER"));
         usersrepos.save(userentry);
     }
 
-    public void saveAdmin(users userentry) {
+    public void saveAdmin(UserEntry userentry) {
         userentry.setPassword(encoder.encode(userentry.getPassword()));
         userentry.setRoles(Arrays.asList("USER","ADMIN"));
         usersrepos.save(userentry);
     }
 
-    public void saveEntry(users userentry) {
+    public void saveEntry(UserEntry userentry) {
         usersrepos.save(userentry);
     }
 
-    public List<users> getEntries() {
+    public List<UserEntry> getEntries() {
 
         return usersrepos.findAll();
     }
-    public Optional<users> getEntryById(ObjectId id) {
+    public Optional<UserEntry> getEntryById(ObjectId id) {
 
         return usersrepos.findById(id);
     }
@@ -48,7 +48,7 @@ public class usersService {
     public void deleteEntryById(ObjectId id) {
         usersrepos.deleteById(id);
     }
-    public users findbyUsername(String username) {
+    public UserEntry findbyUsername(String username) {
         return usersrepos.findByUsername(username);
     }
 

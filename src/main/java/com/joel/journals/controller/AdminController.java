@@ -1,6 +1,6 @@
 package com.joel.journals.controller;
 
-import com.joel.journals.entity.users;
+import com.joel.journals.entity.UserEntry;
 import com.joel.journals.service.usersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,7 +16,7 @@ public class AdminController {
     private usersService usersService;
     @GetMapping
     public ResponseEntity<?> getallUsers(){
-        List<users> entries = usersService.getEntries();
+        List<UserEntry> entries = usersService.getEntries();
         if(entries!=null && !entries.isEmpty()){
             return new ResponseEntity<>(entries, HttpStatus.OK);
         }
@@ -25,7 +25,7 @@ public class AdminController {
     }
 
     @PostMapping
-    public ResponseEntity<?> craeteAdmin(@RequestBody users user){
+    public ResponseEntity<?> craeteAdmin(@RequestBody UserEntry user){
         usersService.saveAdmin(user);
         return new ResponseEntity<>(HttpStatus.OK);
     }
