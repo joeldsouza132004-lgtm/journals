@@ -42,19 +42,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 1. Authenticate with Google Cloud
+        # 1. Authenticate with Google Cloud
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      # 2. Install gcloud CLI + App Engine components
+        # 2. Install gcloud + App Engine components
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: "journalapp-132004"   # <-- YOUR REAL PROJECT ID
-          install_components: ["app-engine-java"]
 
-      # 3. Deploy to App Engine
+          project_id: "journalapp-132004"
+          install_components:
+            - app-engine-java
+
+        # 3. Deploy to App Engine
       - name: Deploy to App Engine
         run: gcloud app deploy app.yaml --quiet
