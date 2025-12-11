@@ -1,7 +1,6 @@
-# Use OpenJDK 21
+# Build stage
 FROM eclipse-temurin:21-jdk-alpine as builder
 
-# Set working directory
 WORKDIR /app
 
 # Copy Maven wrapper and pom.xml
@@ -9,8 +8,8 @@ COPY mvnw .
 COPY .mvn .mvn
 COPY pom.xml .
 
-# Download dependencies
-RUN ./mvnw dependency:go-offline -B
+# Make mvnw executable and download dependencies
+RUN chmod +x mvnw && ./mvnw dependency:go-offline -B
 
 # Copy source code
 COPY src src
@@ -21,15 +20,14 @@ RUN ./mvnw clean package -DskipTests
 # Runtime stage
 FROM eclipse-temurin:21-jre-alpine
 
-# Create app user for security
-RUN addgroup -S spring && adduser -S spring -G spring
-USER spring:spring
-
-# Set working directory
 WORKDIR /app
 
-# Copy jar from builder stage
-COPY --from=builder /app/target/journals-0.0.1-SNAPSHOT.jar app.jar
+# Copy the built jar from the builder stage
+COPY --from=builder /app/target/*.jar app.jar
+
+# Create a non-root user to run the app
+RUN addgroup -S spring && adduser -S spring -G spring
+USER spring:spring
 
 # Expose port
 EXPOSE 8080

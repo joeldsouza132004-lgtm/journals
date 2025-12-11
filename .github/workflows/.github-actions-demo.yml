@@ -1,4 +1,4 @@
-name: Build and Deploy to App Engine
+name: Build and Deploy to Cloud Run
 
 on:
   push:
@@ -7,6 +7,11 @@ on:
   pull_request:
     branches:
       - development
+
+env:
+  PROJECT_ID: journalapp-132004
+  SERVICE_NAME: journals-app
+  REGION: asia-south1
 
 jobs:
   build:
@@ -26,34 +31,22 @@ jobs:
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
 
-      - name: Upload Artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: build-artifact
-          path: target/*.jar
+      - name: Verify JAR file
+        run: |
+          echo "Built JAR file:"
+          ls -lh target/*.jar
+          echo "JAR file size:"
+          du -h target/*.jar
 
   deploy:
     needs: build
-    name: Deploy to Google App Engine
+    name: Deploy to Cloud Run
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-      - name: Download Artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: build-artifact
-          path: .  # Download to current directory
-
-      - name: List files (debug)
-        run: |
-          echo "Current directory contents:"
-          ls -la
-          echo "JAR file details:"
-          ls -lh *.jar || echo "No JAR files found"
 
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
@@ -63,19 +56,41 @@ jobs:
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v2
         with:
-          project_id: "journalapp-132004"
+          project_id: ${{ env.PROJECT_ID }}
 
-      - name: Deploy to App Engine
+      - name: Build and Deploy to Cloud Run
         run: |
-          # Verify JAR exists in current directory
-          if [ ! -f "journals-0.0.1-SNAPSHOT.jar" ]; then
-            echo "ERROR: JAR file not found!"
-            echo "Looking for JAR files..."
-            find . -name "*.jar" -type f
-            exit 1
-          fi
+          echo "🚀 Building and deploying to Cloud Run..."
           
-          echo "✅ JAR file found:"
-          ls -lh journals-0.0.1-SNAPSHOT.jar
+          # Deploy to Cloud Run
+          gcloud run deploy $SERVICE_NAME \
+            --source . \
+            --platform managed \
+            --region $REGION \
+            --allow-unauthenticated \
+            --port 8080 \
+            --memory 512Mi \
+            --cpu 1 \
+            --max-instances 5 \
+            --min-instances 0 \
+            --concurrency 80 \
+            --timeout 300s \
+            --set-env-vars="SPRING_DATA_MONGODB_URI=${{ secrets.MONGODB_URI }}" \
+            --set-env-vars="SPRING_DATA_MONGODB_AUTO_INDEX_CREATION=true" \
+            --set-env-vars="PORT=8080" \
+            --quiet
           
-          gcloud app deploy app.yaml --stop-previous-version --quiet
+          echo "✅ Deployment complete!"
+
+      - name: Show Service URL
+        run: |
+          SERVICE_URL=$(gcloud run services describe $SERVICE_NAME \
+            --platform managed \
+            --region $REGION \
+            --format="value(status.url)")
+          
+          echo "🌐 Your application is live at:"
+          echo "$SERVICE_URL"
+          
+          # Set output for GitHub Actions
+          echo "service_url=$SERVICE_URL" >> $GITHUB_OUTPUT
