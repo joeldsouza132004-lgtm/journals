@@ -28,6 +28,12 @@ jobs:
       - name: Build with Maven
         run: mvn -B clean package --file pom.xml
 
+      - name: Upload JAR artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: java-app
+          path: target/*.jar
+
   deploy:
     needs: build
     name: Deploy to Cloud Run
@@ -37,6 +43,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Download JAR artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: java-app
+          path: target/
 
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
@@ -48,66 +60,15 @@ jobs:
         with:
           project_id: ${{ env.PROJECT_ID }}
 
-      - name: Enable Required APIs
-        run: |
-          gcloud services enable run.googleapis.com
-          gcloud services enable artifactregistry.googleapis.com
-          gcloud services enable cloudbuild.googleapis.com
-          echo "✅ APIs enabled"
-
-      - name: Create Artifact Registry Repository
-        run: |
-          # Create repository if it doesn't exist
-          gcloud artifacts repositories describe cloud-run-source-deploy \
-            --location=$REGION 2>/dev/null || \
-          gcloud artifacts repositories create cloud-run-source-deploy \
-            --repository-format=docker \
-            --location=$REGION \
-            --description="Cloud Run source deploy repository" \
-            --quiet
-          
-          echo "✅ Artifact Registry repository ready"
-
-      - name: Grant Required Permissions
-        run: |
-          # Grant Artifact Registry permissions
-          gcloud projects add-iam-policy-binding $PROJECT_ID \
-            --member="serviceAccount:github-deployer@journalapp-132004.iam.gserviceaccount.com" \
-            --role="roles/artifactregistry.admin"
-          
-          # Grant Cloud Build permissions
-          gcloud projects add-iam-policy-binding $PROJECT_ID \
-            --member="serviceAccount:github-deployer@journalapp-132004.iam.gserviceaccount.com" \
-            --role="roles/cloudbuild.builds.editor"
-          
-          echo "✅ Permissions granted. Waiting 30 seconds for propagation..."
-          sleep 30
-
+      # === PASTE THE DEPLOY COMMAND HERE ===
       - name: Deploy to Cloud Run
         run: |
-          echo "🚀 Deploying to Cloud Run..."
-          
-          # Deploy using source
-          gcloud run deploy $SERVICE_NAME \
+          gcloud run deploy journals-app \
             --source . \
             --platform managed \
-            --region $REGION \
+            --region asia-south1 \
             --allow-unauthenticated \
-            --port 8080 \
             --memory 512Mi \
-            --cpu 1 \
-            --max-instances 3 \
-            --timeout 300s \
             --set-env-vars="SPRING_DATA_MONGODB_URI=${{ secrets.MONGODB_URI }}" \
-            --set-env-vars="PORT=8080" \
             --quiet
-          
-          echo "✅ Deployment successful!"
-
-      - name: Get Service URL
-        run: |
-          URL=$(gcloud run services describe $SERVICE_NAME \
-            --platform managed \
-            --region $REGION \
-            --format="value(status.url)")
-          echo "🌐 Your app is live at: $URL"
+      # === END OF DEPLOY COMMAND ===
