@@ -1,4 +1,3 @@
-
 name: Build and Deploy to App Engine
 
 on:
@@ -43,6 +42,11 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Download Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifact
+          path: target/
 
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
