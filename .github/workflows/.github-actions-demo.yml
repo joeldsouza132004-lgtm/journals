@@ -46,7 +46,10 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: target/
+          path: ./
+
+      - name: List files (debug)
+        run: ls -la
 
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
