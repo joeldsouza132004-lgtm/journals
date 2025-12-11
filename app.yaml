@@ -1,0 +1,14 @@
+runtime: java21
+instance_class: F2
+
+env_variables:
+  SPRING_PROFILES_ACTIVE: "production"
+  SPRING_DATA_MONGODB_URI: "mongodb+srv://joeldsouza132004_db_user:b9l3kVadFbkBwOqk@cluster1.shdqnec.mongodb.net/journaldb?retryWrites=true&w=majority"
+  SPRING_DATA_MONGODB_AUTO_INDEX_CREATION: "true"
+
+automatic_scaling:
+  min_instances: 1
+  max_instances: 5
+  target_cpu_utilization: 0.65
+
+entrypoint: java -jar target/journals-0.0.1-SNAPSHOT.jar
