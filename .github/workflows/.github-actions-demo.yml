@@ -24,7 +24,7 @@ jobs:
           java-version: '21'
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        run: mvn -B clean package --file pom.xml
 
       - name: Upload Artifact
         uses: actions/upload-artifact@v4
@@ -49,7 +49,11 @@ jobs:
           path: ./
 
       - name: List files (debug)
-        run: ls -la
+        run: |
+          echo "Current directory contents:"
+          ls -la
+          echo "JAR file details:"
+          ls -lh *.jar
 
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
@@ -62,4 +66,4 @@ jobs:
           project_id: "journalapp-132004"
 
       - name: Deploy to App Engine
-        run: gcloud app deploy app.yaml --quiet
+        run: gcloud app deploy app.yaml --verbosity=debug --quiet
