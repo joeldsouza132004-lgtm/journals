@@ -1,3 +1,12 @@
 runtime: java21
+instance_class: F2
+entrypoint: java -Xmx512m -jar journals-0.0.1-SNAPSHOT.jar
 
-entrypoint: java -jar journals-0.0.1-SNAPSHOT.jar
+automatic_scaling:
+  min_instances: 1
+  max_instances: 3
+  target_cpu_utilization: 0.65
+
+env_variables:
+  SPRING_DATA_MONGODB_URI: "mongodb+srv://joeldsouza132004_db_user:b9l3kVadFbkBwOqk@cluster1.shdqnec.mongodb.net/journaldb?retryWrites=true&w=majority"
+  PORT: "8080"

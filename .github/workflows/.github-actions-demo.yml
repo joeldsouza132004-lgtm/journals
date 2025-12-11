@@ -46,14 +46,14 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: build-artifact
-          path: ./
+          path: .  # Download to current directory
 
       - name: List files (debug)
         run: |
           echo "Current directory contents:"
           ls -la
           echo "JAR file details:"
-          ls -lh *.jar
+          ls -lh *.jar || echo "No JAR files found"
 
       - name: Google Cloud Auth
         uses: google-github-actions/auth@v2
@@ -66,4 +66,16 @@ jobs:
           project_id: "journalapp-132004"
 
       - name: Deploy to App Engine
-        run: gcloud app deploy app.yaml --stop-previous-version --quiet
+        run: |
+          # Verify JAR exists in current directory
+          if [ ! -f "journals-0.0.1-SNAPSHOT.jar" ]; then
+            echo "ERROR: JAR file not found!"
+            echo "Looking for JAR files..."
+            find . -name "*.jar" -type f
+            exit 1
+          fi
+          
+          echo "✅ JAR file found:"
+          ls -lh journals-0.0.1-SNAPSHOT.jar
+          
+          gcloud app deploy app.yaml --stop-previous-version --quiet
