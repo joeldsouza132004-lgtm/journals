@@ -66,4 +66,4 @@ jobs:
           project_id: "journalapp-132004"
 
       - name: Deploy to App Engine
-        run: gcloud app deploy app.yaml --verbosity=debug --quiet
+        run: gcloud app deploy app.yaml --stop-previous-version --quiet
