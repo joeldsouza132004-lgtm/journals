@@ -54,7 +54,7 @@ jobs:
         with:
           project_id: "journalapp-132004"
           install_components:
-            -app-engine-java
+            - app-engine-java
 
       - name: Deploy to App Engine
         run: gcloud app deploy app.yaml --quiet
