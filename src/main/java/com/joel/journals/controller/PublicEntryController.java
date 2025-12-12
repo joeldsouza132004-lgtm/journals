@@ -8,6 +8,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/public")
 public class PublicEntryController {
 
+    @org.springframework.beans.factory.annotation.Autowired
+    private com.joel.journals.service.usersService usersService;
+
+    @org.springframework.web.bind.annotation.PostMapping("/create-user")
+    public void createUser(@org.springframework.web.bind.annotation.RequestBody com.joel.journals.entity.UserEntry entry) {
+        usersService.SaveNewEntry(entry);
+    }
+
     @GetMapping("/ping")
     public String ping() {
         return "ok";
