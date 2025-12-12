@@ -36,6 +36,10 @@ public class usersService {
         usersrepos.save(userentry);
     }
 
+    public void saveUser(UserEntry user) {
+        usersrepos.save(user);
+    }
+
     public List<UserEntry> getEntries() {
 
         return usersrepos.findAll();

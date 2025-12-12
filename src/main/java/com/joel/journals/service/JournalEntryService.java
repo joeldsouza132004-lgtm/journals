@@ -43,7 +43,7 @@ public class JournalEntryService {
         }
         user.getJornalEntries().add(saved);
 
-        usersService.SaveNewEntry(user);   // make sure usersService has this
+        usersService.saveUser(user);   // make sure usersService has this
 
         return saved;
     }
