@@ -31,4 +31,27 @@ public class AdminController {
     }
 
 
+    @Autowired
+    private com.joel.journals.service.JournalEntryService journalEntryService;
+
+    @GetMapping("/all-journals")
+    public ResponseEntity<?> getAllJournalEntries() {
+        List<com.joel.journals.entity.JornalEntry> all = journalEntryService.getEntries();
+        if (all != null && !all.isEmpty()) {
+            return new ResponseEntity<>(all, HttpStatus.OK);
+        }
+        return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+    }
+
+    @PostMapping("/promote/{username}")
+    public ResponseEntity<?> promoteUser(@PathVariable String username) {
+        usersService.promoteUserToAdmin(username);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @DeleteMapping("/user/{username}")
+    public ResponseEntity<?> deleteUser(@PathVariable String username) {
+        usersService.deleteUserByUsername(username);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
