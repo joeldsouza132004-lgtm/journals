@@ -31,7 +31,7 @@ public class JournalEntryController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
         UserEntry user = usersService.findbyUsername(username);
-        List<JornalEntry> all =journalEntryService.getEntries();
+        List<JornalEntry> all = user.getJornalEntries();
         if(all!=null && !all.isEmpty()){
             return new ResponseEntity<>(all, HttpStatus.OK);
         }
@@ -67,6 +67,11 @@ public class JournalEntryController {
     @DeleteMapping("/{myid}")
     public ResponseEntity<?> deleteEntry(@PathVariable ObjectId myid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        
         String username = authentication.getName();
         boolean removed =journalEntryService.deleteEntryById(myid,username);
         if(removed){
