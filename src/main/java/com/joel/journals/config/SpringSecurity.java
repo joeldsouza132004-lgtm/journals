@@ -39,6 +39,8 @@ public class SpringSecurity {
                         .requestMatchers(HttpMethod.GET, "/public/**").permitAll()
                         .requestMatchers(HttpMethod.PUT, "/public/**").permitAll()
                         .requestMatchers(HttpMethod.DELETE, "/public/**").permitAll()
+                        .requestMatchers("/journal/**").authenticated()
+                        .requestMatchers("/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .formLogin(form -> form.disable())
