@@ -56,4 +56,22 @@ public class usersService {
         return usersrepos.findByUsername(username);
     }
 
+    public void deleteUserByUsername(String username) {
+        UserEntry user = usersrepos.findByUsername(username);
+        if (user != null) {
+            usersrepos.delete(user);
+        }
+    }
+
+    public void promoteUserToAdmin(String username) {
+        UserEntry user = usersrepos.findByUsername(username);
+        if (user != null) {
+            List<String> roles = user.getRoles();
+            if (!roles.contains("ADMIN")) {
+                roles.add("ADMIN");
+                usersrepos.save(user);
+            }
+        }
+    }
+
 }
