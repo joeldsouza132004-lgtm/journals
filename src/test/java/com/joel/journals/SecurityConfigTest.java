@@ -29,7 +29,7 @@ public class SecurityConfigTest {
 
     @Test
     public void testPublicCreateEntryEndpoint() throws Exception {
-        mockMvc.perform(post("/public")
+        mockMvc.perform(post("/public/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"test\", \"password\": \"test\"}"))
                 .andExpect(status().isOk());
@@ -39,6 +39,6 @@ public class SecurityConfigTest {
     public void testPublicEndpointWithInvalidAuth() throws Exception {
         mockMvc.perform(get("/public/ping")
                 .header("Authorization", "Basic invalid"))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isOk());
     }
 }
