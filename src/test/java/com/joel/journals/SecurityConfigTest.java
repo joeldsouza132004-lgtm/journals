@@ -6,6 +6,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -18,7 +19,7 @@ public class SecurityConfigTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @org.springframework.boot.test.mock.mockito.MockBean
+    @MockitoBean
     private com.joel.journals.service.usersService usersService;
 
     @Test
@@ -29,7 +30,7 @@ public class SecurityConfigTest {
 
     @Test
     public void testPublicCreateEntryEndpoint() throws Exception {
-        mockMvc.perform(post("/public")
+        mockMvc.perform(post("/public/create-user")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"username\": \"test\", \"password\": \"test\"}"))
                 .andExpect(status().isOk());
