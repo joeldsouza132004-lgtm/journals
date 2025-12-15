@@ -19,24 +19,6 @@ public class UserController {
     @Autowired
     private usersService userentry;
 
-
-
-    @GetMapping
-    public List<UserEntry> getAll() {
-        return userentry.getEntries();
-    }
-
-    @GetMapping("/id/{myid}")
-    public UserEntry getByid(@PathVariable ObjectId myid){
-        return userentry.getEntryById(myid).orElse(null);
-    }
-
-//    @DeleteMapping("/{myid}")
-//    public boolean deleteEntry(@PathVariable ObjectId myid){
-//        userentry.deleteEntryById(myid);
-//        return true;
-//    }
-
     @PutMapping()
     public ResponseEntity<?> updateuser(@RequestBody UserEntry entry) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
