@@ -1,7 +1,7 @@
 package com.joel.journals.controller;
 
 import com.joel.journals.entity.JornalEntry;
-import com.joel.journals.entity.users;
+import com.joel.journals.entity.UserEntry;
 import com.joel.journals.service.JournalEntryService;
 import com.joel.journals.service.usersService;
 import org.bson.types.ObjectId;
@@ -10,7 +10,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -31,8 +30,8 @@ public class JournalEntryController {
     public ResponseEntity<?> getAllJournalEntriesOfUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        users user = usersService.findbyUsername(username);
-        List<JornalEntry> all =journalEntryService.getEntries();
+        UserEntry user = usersService.findbyUsername(username);
+        List<JornalEntry> all = user.getJornalEntries();
         if(all!=null && !all.isEmpty()){
             return new ResponseEntity<>(all, HttpStatus.OK);
         }
@@ -56,7 +55,7 @@ public class JournalEntryController {
     public ResponseEntity<?> getJournalByid(@PathVariable ObjectId myid){
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        users users = usersService.findbyUsername(username);
+        UserEntry users = usersService.findbyUsername(username);
         List<JornalEntry> collect = users.getJornalEntries().stream().filter(x -> x.getId().equals(myid)).collect(Collectors.toList());
         if(!collect.isEmpty()){
             Optional<JornalEntry> jornalEntry=journalEntryService.getEntryById(myid);
@@ -68,6 +67,11 @@ public class JournalEntryController {
     @DeleteMapping("/{myid}")
     public ResponseEntity<?> deleteEntry(@PathVariable ObjectId myid) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"));
+        if (!isAdmin) {
+            return new ResponseEntity<>(HttpStatus.FORBIDDEN);
+        }
+        
         String username = authentication.getName();
         boolean removed =journalEntryService.deleteEntryById(myid,username);
         if(removed){
@@ -80,14 +84,14 @@ public class JournalEntryController {
     public ResponseEntity<?> updateJournalEntryById(@PathVariable ObjectId id,@RequestBody JornalEntry newentry) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();
-        users users = usersService.findbyUsername(username);
+        UserEntry users = usersService.findbyUsername(username);
         List<JornalEntry> collect = users.getJornalEntries().stream().filter(x -> x.getId().equals(id)).collect(Collectors.toList());
         if (!collect.isEmpty()) {
             Optional<JornalEntry> jornalEntry = journalEntryService.getEntryById(id);
             if (jornalEntry.isPresent()) {
                 JornalEntry old = jornalEntry.get();
-                old.setTitle(newentry.getTitle() != null && newentry.getTitle().equals("") ? newentry.getTitle() : old.getTitle());
-                old.setContent(newentry.getContent() != null && newentry.getContent().equals("") ? newentry.getContent() : old.getContent());
+                old.setTitle(newentry.getTitle() != null && !newentry.getTitle().equals("") ? newentry.getTitle() : old.getTitle());
+                old.setContent(newentry.getContent() != null && !newentry.getContent().equals("") ? newentry.getContent() : old.getContent());
                 journalEntryService.saveEntry(old);
                 return new ResponseEntity<>(old, HttpStatus.OK);
             }
