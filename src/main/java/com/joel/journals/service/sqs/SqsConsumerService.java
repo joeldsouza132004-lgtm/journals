@@ -1,4 +1,4 @@
-package com.joel.journals.service;
+package com.joel.journals.service.sqs;
 
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
