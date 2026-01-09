@@ -25,6 +25,7 @@ public class SqsConsumerService {
 
     @PostConstruct
     public void startPolling() {
+        log.info("Starting SqsConsumerService");
         new Thread(this::pollMessages).start();
     }
 
