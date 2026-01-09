@@ -14,5 +14,5 @@ env_variables:
 aws:
   region: ap-south-1
   sqs:
-    input-queue-url: https://sqs.ap-south-1.amazonaws.com/ACCOUNT_ID/journal-events-queue
-    output-queue-url: https://sqs.ap-south-1.amazonaws.com/ACCOUNT_ID/journal-processed-queue
+    input-queue-url: https://sqs.ap-south-1.amazonaws.com/275115135857/journal-input-queue
+    output-queue-url: https://sqs.ap-south-1.amazonaws.com/275115135857/journal-ouput-queue
