@@ -14,6 +14,9 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SqsConsumerService {
+    static{
+        System.out.println("SqsConsumerService class loaded");
+    }
 
     private final SqsClient sqsClient;
 
