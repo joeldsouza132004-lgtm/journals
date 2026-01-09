@@ -10,3 +10,9 @@ automatic_scaling:
 env_variables:
   SPRING_DATA_MONGODB_URI: "mongodb+srv://joeldsouza132004_db_user:b9l3kVadFbkBwOqk@cluster1.shdqnec.mongodb.net/journaldb?retryWrites=true&w=majority"
   PORT: "8080"
+
+aws:
+  region: ap-south-1
+  sqs:
+    input-queue-url: https://sqs.ap-south-1.amazonaws.com/ACCOUNT_ID/journal-events-queue
+    output-queue-url: https://sqs.ap-south-1.amazonaws.com/ACCOUNT_ID/journal-processed-queue
