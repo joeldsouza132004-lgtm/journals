@@ -1,14 +1,9 @@
-name: Build and Deploy to Cloud Run
+name: Build and Deploy to EC2
 
 on:
   push:
     branches:
       - development
-
-env:
-  PROJECT_ID: journalapp-132004
-  SERVICE_NAME: journals-app
-  REGION: asia-south1
 
 jobs:
   build:
@@ -36,39 +31,30 @@ jobs:
 
   deploy:
     needs: build
-    name: Deploy to Cloud Run
+    name: Deploy to AWS EC2
     runs-on: ubuntu-latest
-    if: github.event_name == 'push'
 
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
       - name: Download JAR artifact
         uses: actions/download-artifact@v4
         with:
           name: java-app
           path: target/
 
-      - name: Google Cloud Auth
-        uses: google-github-actions/auth@v2
+      - name: Copy JAR to EC2
+        uses: appleboy/scp-action@v0.1.7
         with:
-          credentials_json: ${{ secrets.GCP_SA_KEY }}
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "target/*.jar"
+          target: "/opt/journal-app/journals.jar"
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
+      - name: Restart application on EC2
+        uses: appleboy/ssh-action@v1.0.3
         with:
-          project_id: ${{ env.PROJECT_ID }}
-
-      # === PASTE THE DEPLOY COMMAND HERE ===
-      - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy journals-app \
-            --source . \
-            --platform managed \
-            --region asia-south1 \
-            --allow-unauthenticated \
-            --memory 512Mi \
-            --set-env-vars="SPRING_DATA_MONGODB_URI=${{ secrets.MONGODB_URI }}" \
-            --quiet
-      # === END OF DEPLOY COMMAND ===
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo systemctl restart journal
