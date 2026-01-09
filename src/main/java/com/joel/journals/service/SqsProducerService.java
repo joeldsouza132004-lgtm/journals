@@ -1,4 +1,4 @@
-package com.joel.journals.service.sqs;
+package com.joel.journals.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
